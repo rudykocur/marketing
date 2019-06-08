@@ -1,7 +1,7 @@
 
 
 export default class SettingsService {
-    loadSettings() {
+    load() {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve({
@@ -14,7 +14,7 @@ export default class SettingsService {
         })
     }
 
-    saveSettings(newSettings) {
+    save(newSettings) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve();

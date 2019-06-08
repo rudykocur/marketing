@@ -4,10 +4,11 @@ import App from './App.vue'
 import router from './router'
 import createStore from './store'
 import SettingsService from './services/SettingsService'
+import ContactsService from './services/ContactsService'
 
 Vue.config.productionTip = false;
 
-let store = createStore(new SettingsService());
+let store = createStore(new SettingsService(), new ContactsService());
 
 new Vue({
   router,

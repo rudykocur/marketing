@@ -23,7 +23,7 @@ export default class ContactsService {
                     {id: 2, email: 'mzdzblo@gmail.com', firstName: 'Mieciu', lastName: 'Źdźbło'},
                     {id: 3, email: 'awichura@gmail.com', firstName: 'Ania', lastName: 'Wichura'},
                 ]);
-            }, 2000)
+            }, 1000)
         })
     }
 
@@ -31,7 +31,7 @@ export default class ContactsService {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve();
-            }, 2000)
+            }, 1000)
         })
     }
 }

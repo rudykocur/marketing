@@ -9,7 +9,7 @@
 
         <v-card>
             <v-card-title>
-                <span class="headline">Add new contact</span>
+                <span class="headline">Add new group</span>
             </v-card-title>
             <v-card-text>
                 <v-form v-model="valid" ref="form">
@@ -17,20 +17,19 @@
                         <v-layout wrap>
                             <v-flex xs12>
                                 <v-text-field
-                                        label="Email"
-                                        v-model="formData.email"
+                                        label="Name"
+                                        v-model="formData.name"
                                         :rules="requiredRules"
                                         required></v-text-field>
-                                <v-text-field
-                                        label="First name"
-                                        v-model="formData.firstName"
-                                        :rules="requiredRules"
-                                        required></v-text-field>
-                                <v-text-field
-                                        label="Last name"
-                                        v-model="formData.lastName"
-                                        :rules="requiredRules"
-                                        required></v-text-field>
+
+                                <v-autocomplete
+                                        label="Users"
+                                        multiple
+                                        :items="allUsers"
+                                        item-text="email"
+                                        item-value="id"
+                                        v-model="formData.members">
+                                </v-autocomplete>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -69,9 +68,8 @@
             error: null,
             valid: true,
             formData: {
-                email: 'janek@op.pl',
-                firstName: 'Janek',
-                lastName: 'Kowalski',
+                name: 'Gruba grupa',
+                members: [],
             },
             requiredRules: [
                 v => !!v || 'Required'
@@ -99,14 +97,19 @@
                     return;
                 }
 
-                this.$emit('new-contact', this.formData);
+                this.$emit('new-group', this.formData);
 
                 this.error = null;
             },
         },
-        computed: {},
+        computed: {
+            allUsers() {
+                return this.$store.state.contacts.contacts;
+            }
+        },
 
         mounted() {
+            this.$store.dispatch('contacts/loadContacts')
         }
     }
 </script>

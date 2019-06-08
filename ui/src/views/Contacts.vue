@@ -23,78 +23,59 @@
                 ></v-text-field>
             </v-card-title>
 
-            <v-data-table
-                    v-model="selected"
+            <SelectableTable
                     :headers="headers"
-                    :items="contacts"
-                    :loading="busy"
+                    item_key="id"
+                    default_sort="email"
                     :search="search"
-                    :select-all="true"
-                    :pagination.sync="pagination"
-                    item-key="id"
-            >
-                <template v-slot:headers="props">
-                    <tr>
-                        <th>
-                            <v-checkbox
-                                    :input-value="props.all"
-                                    :indeterminate="props.indeterminate"
-                                    primary
-                                    hide-details
-                                    @click.stop="toggleAll"
-                            ></v-checkbox>
-                        </th>
-                        <th
-                                v-for="header in props.headers"
-                                :key="header.text"
-                                :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-                                @click="changeSort(header.value)"
-                        >
-                            <v-icon small>arrow_upward</v-icon>
-                            {{ header.text }}
-                        </th>
-                    </tr>
-                </template>
-                <template v-slot:items="row">
-                    <tr :active="row.selected" @click="row.selected = !row.selected">
-                        <td>
-                            <v-checkbox
-                                    :input-value="row.selected"
-                                    primary
-                                    hide-details
-                            ></v-checkbox>
-                        </td>
-                        <td>{{ row.item.email }}</td>
+                    :busy="busy"
+                    :items="contacts" @selection-changed="selectionChanged">
+                <template v-slot:row="{row}">
+                    <td>{{ row.item.email }}</td>
                         <td>{{ row.item.firstName }}</td>
                         <td>{{ row.item.lastName }}</td>
-                    </tr>
                 </template>
-                <template v-slot:footer>
-                    <td :colspan="headers.length + 1" style="padding-left: 16px" >
-                        <v-btn color="warning"
+
+                <template v-slot:actions>
+                    <v-btn
+                               @click=""
+                               :disabled="!canOperateOnSelectedRows">
+                            <v-icon>group_add</v-icon>
+                            Add to group
+                        </v-btn>
+
+                        <v-btn class="deleteButton"
                                @click="deleteSelected"
-                               :disabled="!canDeleteContacts">Delete selected</v-btn>
-                    </td>
+                               :disabled="!canOperateOnSelectedRows">
+                            <v-icon>delete</v-icon>
+                            Delete
+                        </v-btn>
                 </template>
-            </v-data-table>
+            </SelectableTable>
+
         </v-card>
     </v-container>
 </template>
 
+<style scoped>
+    .v-btn.deleteButton:hover:before {
+        background: red;
+        opacity: 0.6;
+    }
+</style>
+
 <script>
     import { mapState } from 'vuex'
     import NewContactForm from '../components/NewContactForm.vue'
+    import SelectableTable from '../components/SelectableTable.vue'
 
     export default {
         components: {
-            NewContactForm
+            NewContactForm,
+            SelectableTable,
         },
         data: () => ({
             search: '',
-            dialog: false,
-            pagination: {
-                sortBy: 'email'
-            },
             selected: [],
             headers: [
                 {text: 'Email address', value: 'email'},
@@ -104,9 +85,8 @@
         }),
 
         methods: {
-            toggleAll() {
-                if (this.selected.length) this.selected = [];
-                else this.selected = this.contacts.slice()
+            selectionChanged(newSelection) {
+                this.selected = newSelection;
             },
             deleteSelected() {
                 this.$store.dispatch('contacts/removeContacts', this.selected);
@@ -121,7 +101,7 @@
         },
         computed: Object.assign(
             {
-                canDeleteContacts() {return this.selected.length > 0 && !this.busy},
+                canOperateOnSelectedRows() {return this.selected.length > 0 && !this.busy},
                 canAddContact() {return !this.busy},
             },
             mapState({

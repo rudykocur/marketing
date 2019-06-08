@@ -21,7 +21,7 @@ function createSettingsStore(settingsService) {
         },
         mutations: {
             setSettings: (state, settings) => {
-                state.serverSettings = settings;
+                state.settings = settings;
             },
             setBusy(state, isBusy) {
                 state.busy = isBusy;
@@ -36,7 +36,12 @@ function createSettingsStore(settingsService) {
                     .finally(() => commit('setBusy', false));
             },
 
-            loadSettings: function ({commit}) {
+            loadSettings: function ({commit, state}) {
+
+                if(state.settings.address) {
+                    return Promise.resolve(state.settings);
+                }
+
                 commit('setBusy', true);
 
                 return settingsService.loadSettings()

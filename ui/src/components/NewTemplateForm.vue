@@ -3,13 +3,12 @@
         <template v-slot:activator="{ on }">
             <v-btn color="primary"
                    :disabled="!enabled"
-                   v-on="on">Add new
-            </v-btn>
+                   v-on="on">Add new</v-btn>
         </template>
 
         <v-card>
             <v-card-title>
-                <span class="headline">Add new group</span>
+                <span class="headline">Add new template</span>
             </v-card-title>
             <v-card-text>
                 <v-form v-model="valid" ref="form">
@@ -22,14 +21,7 @@
                                         :rules="requiredRules"
                                         required></v-text-field>
 
-                                <v-autocomplete
-                                        label="Users"
-                                        multiple
-                                        :items="allUsers"
-                                        item-text="email"
-                                        item-value="id"
-                                        v-model="formData.members">
-                                </v-autocomplete>
+
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -66,8 +58,8 @@
             error: null,
             valid: true,
             formData: {
-                name: 'Gruba grupa',
-                members: [],
+                name: 'New template name',
+                content: 'Lorem ipsum',
             },
             requiredRules: [
                 v => !!v || 'Required'
@@ -95,19 +87,15 @@
                     return;
                 }
 
-                this.$emit('new-group', this.formData);
+                this.$emit('new-template', this.formData);
 
                 this.error = null;
             },
         },
         computed: {
-            allUsers() {
-                return this.$store.state.contacts.contacts;
-            }
         },
 
         mounted() {
-            this.$store.dispatch('contacts/loadContacts')
         }
     }
 </script>

@@ -7,6 +7,7 @@
             :loading="busy"
             :search="search"
             :select-all="true"
+            :expand="expand"
             :pagination.sync="pagination"
             :item-key="item_key"
     >
@@ -24,8 +25,8 @@
                 <th
                         v-for="header in props.headers"
                         :key="header.text"
-                        :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-                        @click="changeSort(header.value)"
+                        :class="headerColumns(header, pagination)"
+                        @click="changeSort(header)"
                 >
                     <v-icon small>arrow_upward</v-icon>
                     {{ header.text }}
@@ -44,6 +45,9 @@
                 <slot name="row" v-bind:row="row"></slot>
             </tr>
         </template>
+        <template v-slot:expand="row">
+            <slot name="expand" v-bind:row="row"></slot>
+        </template>
         <template v-slot:footer>
             <td :colspan="headers.length + 1">
                 <slot name="actions"></slot>
@@ -56,11 +60,14 @@
     table.v-table tfoot tr td {
         padding-left: 16px;
     }
+    table .nosort .v-icon {
+        display: none;
+    }
 </style>
 
 <script>
     export default {
-        props: ['busy', 'items', 'item_key', 'headers', 'search', 'default_sort'],
+        props: ['busy', 'items', 'item_key', 'headers', 'search', 'default_sort', 'expand'],
         data: function() {
             return {
                 pagination: {
@@ -70,13 +77,39 @@
             }
         },
         methods: {
+            headerColumns(header, pagination) {
+                let columns = ['column'];
+
+                if(header.sortable !== false) {
+                    columns.push('sortable');
+
+                    columns.push(pagination.descending ? 'desc' : 'asc');
+
+                    if(header.value === pagination.sortBy) {
+                        columns.push('active')
+                    }
+                }
+                else {
+                    columns.push('nosort');
+                }
+
+                return columns;
+            },
+
             toggleAll() {
                 if (this.selected.length) this.selected = [];
                 else this.selected = this.items.slice();
 
                 this.$emit('selection-changed', this.selected);
             },
-            changeSort(column) {
+
+            changeSort(header) {
+                if(header.sortable === false) {
+                    return;
+                }
+
+                let column = header.value;
+
                 if (this.pagination.sortBy === column) {
                     this.pagination.descending = !this.pagination.descending
                 } else {
@@ -84,6 +117,7 @@
                     this.pagination.descending = false
                 }
             },
+
             selectionChanged(row) {
                 row.selected = !row.selected;
 

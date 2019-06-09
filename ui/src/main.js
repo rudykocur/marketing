@@ -6,10 +6,11 @@ import createStore from './store'
 import SettingsService from './services/SettingsService'
 import ContactsService from './services/ContactsService'
 import GroupsService from './services/GroupsService'
+import TemplatesService from './services/TemplatesService'
 
 Vue.config.productionTip = false;
 
-let store = createStore(new SettingsService(), new ContactsService(), new GroupsService());
+let store = createStore(new SettingsService(), new ContactsService(), new GroupsService(), new TemplatesService());
 
 new Vue({
   router,

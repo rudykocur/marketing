@@ -1,0 +1,3 @@
+celery[redis]
+flask-restful
+flask_sqlalchemy

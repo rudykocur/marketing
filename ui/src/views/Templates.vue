@@ -1,6 +1,7 @@
 <template>
     <v-container>
         <h1>Templates configuration page</h1>
+        <p>Define templates for sending mailing</p>
 
         <v-card>
             <v-card-title>

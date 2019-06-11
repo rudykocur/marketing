@@ -1,25 +1,26 @@
-export default class GroupsService {
+import BaseService from './BaseService';
+import axios from "axios";
+
+export default class GroupsService extends BaseService{
     constructor() {
-        this._id = 4;
+        super();
     }
 
     create(name, members) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve({id: this._id++, name: name, contacts: members.length},);
-            }, 1000)
-        })
+        let data = new FormData();
+        data.set('name', name);
+        members.forEach(member => data.append('members', member));
+
+        return this._post('groups/', data);
     }
 
     loadAll() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve([
-                    {id: 1, name: 'Early adopters', contacts: 10},
-                    {id: 2, name: 'Beta testers', contacts: 5},
-                    {id: 3, name: 'VIP users', contacts: 2},
-                ]);
-            }, 1000)
-        })
+        return this._get('groups/');
+    }
+
+    removeById(ids) {
+        return axios.all(ids.map(
+            groupId => this._delete('groups/'+groupId)
+        ))
     }
 }

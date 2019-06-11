@@ -74,14 +74,21 @@
         }),
         methods: {
             deleteSelected() {
-                console.log('TODO DELETING GROUPS', this.selected);
+                this.$store.dispatch('groups/removeGroups', this.selected);
             },
             selectionChanged(newSelection) {
                 this.selected = newSelection;
             },
             async addGroup(data) {
-                await this.$store.dispatch('groups/createGroup', data);
-                this.$refs['form'].close();
+
+                try{
+                    await this.$store.dispatch('groups/createGroup', data);
+                    this.$refs['form'].close();
+                }
+                catch(e) {
+                    this.$refs.form.setError(e.response.data.message);
+                }
+
             },
         },
         computed: Object.assign(

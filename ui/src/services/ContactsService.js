@@ -1,53 +1,24 @@
 import axios from 'axios';
-var qs = require('qs');
+import BaseService from './BaseService';
 
-class ServiceBase {
-    constructor() {
-        this._path = 'http://localhost:5000/'
-    }
-
-    _get(path) {
-        return axios.get(this._path + path)
-            .then(response => response.data);
-    }
-
-    _post(path, data) {
-        const config = {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        };
-
-        return axios.post(this._path + path, qs.stringify(data), config)
-            .then(response => response.data);
-    }
-}
-
-export default class ContactsService extends ServiceBase {
-
-    constructor() {
-        super();
-
-        this._id = 4;
-    }
+export default class ContactsService extends BaseService {
 
     create(email, firstName, lastName) {
-        return this._post('contact/', {
-            email: email,
-            firstName: firstName,
-            lastName: lastName,
-        });
+        let data = new FormData();
+        data.set('email', email);
+        data.set('firstName', firstName);
+        data.set('lastName', lastName);
+
+        return this._post('contacts/', data);
     }
 
     loadAll() {
-        return this._get('contact/');
+        return this._get('contacts/');
     }
 
     removeById(ids) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve();
-            }, 1000)
-        })
+        return axios.all(ids.map(
+            contactId => this._delete('contacts/'+contactId)
+        ))
     }
 }

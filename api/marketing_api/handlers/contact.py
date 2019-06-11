@@ -1,11 +1,15 @@
+from logging import getLogger
+
 from flask import request
 from flask_restful import Resource
 
 from marketing_api.app import db
 from marketing_api.model import Contact
 
+_logger = getLogger(__name__)
 
-class ContactHandler(Resource):
+
+class ContactsHandler(Resource):
     def get(self):
         result = []
 
@@ -34,3 +38,12 @@ class ContactHandler(Resource):
             'firstName': contact.firstName,
             'lastName': contact.lastName,
         }
+
+
+class ContactHandler(Resource):
+    def delete(self, contactId):
+
+        contact = Contact.query.get(contactId)
+        db.session.delete(contact)
+
+        db.session.commit()

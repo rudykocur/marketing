@@ -18,6 +18,10 @@ export default function createGroupsStore(groupsService) {
                 state.groups = newGroups;
             },
 
+            removeGroupsById(state, toRemoveIds) {
+                state.groups = state.groups.filter(row => toRemoveIds.indexOf(row.id) < 0);
+            },
+
             setBusy(state, isBusy) {
                 state.busy = isBusy;
             }
@@ -32,6 +36,18 @@ export default function createGroupsStore(groupsService) {
                         commit('addGroup', newGroup);
 
                         return newGroup;
+                    })
+                    .finally(() => commit('setBusy', false));
+            },
+
+            removeGroups: function({commit}, toRemove) {
+                commit('setBusy', true);
+
+                let idsToRemove = toRemove.map(row => row.id);
+
+                return groupsService.removeById(idsToRemove)
+                    .then(newContacts => {
+                        commit('removeGroupsById', idsToRemove);
                     })
                     .finally(() => commit('setBusy', false));
             },

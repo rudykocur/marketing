@@ -1,25 +1,17 @@
-export default class TemplatesService {
-    constructor() {
-        this._id = 4;
-    }
+import axios from 'axios';
+import BaseService from './BaseService';
+
+export default class TemplatesService extends BaseService {
 
     create(name, content) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve({id: this._id++, name: name, content: content});
-            }, 1000)
-        })
+        let data = new FormData();
+        data.set('name', name);
+        data.set('content', content);
+
+        return this._post('templates/', data);
     }
 
     loadAll() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve([
-                    {id: 1, name: 'Welcome email', content: 'Welcome mail content!'},
-                    {id: 2, name: 'New exciting product in store', content: 'We would like to introduce brand new ...'},
-                    {id: 3, name: 'Obligatory lipsum', content: 'Lorem ipsum dolor sit amet'},
-                ]);
-            }, 1000)
-        })
+        return this._get('templates/');
     }
 }

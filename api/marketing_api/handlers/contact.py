@@ -2,18 +2,22 @@ from logging import getLogger
 
 from flask import request
 from flask_restful import Resource
+from injector import Injector
 
-from marketing_api.app import db
-from marketing_api.model import Contact
+from marketing_api.db.stores import ContactStore
+
 
 _logger = getLogger(__name__)
 
 
 class ContactsHandler(Resource):
+    def __init__(self, ctx: Injector):
+        self.store = ctx.get(ContactStore)
+
     def get(self):
         result = []
 
-        for contact in Contact.query.all():
+        for contact in self.store.getAll():
             result.append({
                 'id': contact.id,
                 'email': contact.email,
@@ -24,13 +28,9 @@ class ContactsHandler(Resource):
         return result
 
     def post(self):
-        contact = Contact(
-            email=request.form['email'],
-            firstName=request.form['firstName'],
-            lastName=request.form['lastName'],
-        )
-        db.session.add(contact)
-        db.session.commit()
+        contact = self.store.create(request.form['email'], request.form['firstName'], request.form['lastName'])
+
+        self.store.commit()
 
         return {
             'id': contact.id,
@@ -40,10 +40,14 @@ class ContactsHandler(Resource):
         }
 
 
-class ContactHandler(Resource):
-    def delete(self, contactId):
+class ContactsDeleteHandler(Resource):
 
-        contact = Contact.query.get(contactId)
-        db.session.delete(contact)
+    def __init__(self, ctx: Injector):
+        self.store = ctx.get(ContactStore)
 
-        db.session.commit()
+    def post(self):
+        contacts = request.form.getlist('contacts')
+
+        self.store.delete(list(map(int, contacts)))
+
+        self.store.commit()

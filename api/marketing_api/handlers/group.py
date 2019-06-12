@@ -1,55 +1,50 @@
 from flask import request
 from flask_restful import Resource
-from sqlalchemy.sql.functions import count
+from injector import Injector
 
-from marketing_api.app import db
-from marketing_api.model import Group, Contact
+from marketing_api.db.stores import GroupStore
 
 
 class GroupsHandler(Resource):
+    def __init__(self, ctx: Injector):
+        self.store = ctx.get(GroupStore)
+
     def get(self):
         result = []
 
-        query = (
-            db.session.query(Group, count(Contact.id))
-            .select_from(Group)
-            .join(Group.users)
-            .group_by(Group.id)
-        )
-
-        for group, contactCount in query.all():
+        for group in self.store.getAll():
 
             result.append({
                 'id': group.id,
                 'name': group.name,
-                'contacts': contactCount,
+                'contacts': group.contacts,
             })
 
         return result
 
     def post(self):
-        group = Group(name=request.form['name'])
+        group = self.store.create(
+            request.form['name'],
+            list(map(int, request.form.getlist('members')))
+        )
 
-        membersList = request.form.getlist('members')
-
-        for memberId in membersList:
-            contact = Contact.query.get(memberId)
-
-            group.users.append(contact)
-
-        db.session.add(group)
-        db.session.commit()
+        self.store.commit()
 
         return {
             'id': group.id,
             'name': group.name,
-            'contacts': len(membersList)
+            'contacts': group.contacts,
         }
 
 
-class GroupHandler(Resource):
-    def delete(self, groupId):
-        group = Group.query.get(groupId)
+class GroupsDeleteHandler(Resource):
 
-        db.session.delete(group)
-        db.session.commit()
+    def __init__(self, ctx: Injector):
+        self.store = ctx.get(GroupStore)
+
+    def post(self):
+        groups = request.form.getlist('groups')
+
+        self.store.delete(list(map(int, groups)))
+
+        self.store.commit()

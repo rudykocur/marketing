@@ -1,15 +1,18 @@
 from flask import request
 from flask_restful import Resource
+from injector import Injector
 
-from marketing_api.app import db
-from marketing_api.model import Group, Template
+from marketing_api.db.stores import TemplateStore
 
 
 class TemplatesHandler(Resource):
+    def __init__(self, ctx: Injector):
+        self.store = ctx.get(TemplateStore)
+
     def get(self):
         result = []
 
-        for template in Template.query.all():
+        for template in self.store.getAll():
             result.append({
                 'id': template.id,
                 'name': template.name,
@@ -19,10 +22,9 @@ class TemplatesHandler(Resource):
         return result
 
     def post(self):
-        template = Template(name=request.form['name'], content=request.form['content'])
+        template = self.store.create(request.form['name'], request.form['content'])
 
-        db.session.add(template)
-        db.session.commit()
+        self.store.commit()
 
         return {
             'id': template.id,
@@ -31,9 +33,14 @@ class TemplatesHandler(Resource):
         }
 
 
-class TemplateHandler(Resource):
-    def delete(self, templateId):
-        template = Template.query.get(templateId)
+class TemplatesDeleteHandler(Resource):
 
-        db.session.delete(template)
-        db.session.commit()
+    def __init__(self, ctx: Injector):
+        self.store = ctx.get(TemplateStore)
+
+    def post(self):
+        templates = request.form.getlist('templates')
+
+        self.store.delete(list(map(int, templates)))
+
+        self.store.commit()

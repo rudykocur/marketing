@@ -1,16 +1,23 @@
 from collections import namedtuple
 from typing import List
 
+from injector import inject
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import count
 
-from marketing_api.app import db
-from marketing_api.db.model import contacts, groups, contact_to_group, templates, mailing_jobs
+from marketing_api.db.model import contacts, groups, contact_to_group, templates, mailing_jobs, Database
 
 
 class DataStore(object):
+
+    @inject
+    def __init__(self, db: Database):
+        self.db = db
+
     @property
-    def session(self):
-        return db.session
+    def session(self) -> Session:
+        return self.db.session
 
     def commit(self):
         self.session.commit()
@@ -29,7 +36,7 @@ class ContactStore(DataStore):
 
     def getByGroup(self, groupId: int):
         query = (
-            db.select(
+            select(
                 columns=contacts.c,
                 whereclause=contact_to_group.c.group_id == groupId
             )
@@ -46,7 +53,7 @@ class ContactStore(DataStore):
         ) for row in rows]
 
     def getAll(self) -> List[ContactDTO]:
-        rows = self.session.execute(db.select(contacts.c))
+        rows = self.session.execute(select(contacts.c))
 
         return [ContactDTO(
             row[contacts.c.id],
@@ -75,7 +82,7 @@ class GroupStore(DataStore):
 
     def get(self, groupId: int):
         query = (
-            db.select(
+            select(
                 columns=[
                     groups.c.id,
                     groups.c.name,
@@ -97,7 +104,7 @@ class GroupStore(DataStore):
 
     def getAll(self) -> List[GroupDTO]:
         query = (
-            db.select(
+            select(
                 columns=[
                     groups.c.id,
                     groups.c.name,
@@ -127,7 +134,7 @@ class TemplateStore(DataStore):
         return TemplateDTO(result.inserted_primary_key[0], name, content)
 
     def get(self, templateId: int) -> TemplateDTO:
-        query = db.select(templates.c, whereclause=templates.c.id == templateId)
+        query = select(templates.c, whereclause=templates.c.id == templateId)
         row = self.session.execute(query).fetchone()
 
         return TemplateDTO(
@@ -137,7 +144,7 @@ class TemplateStore(DataStore):
         )
 
     def getAll(self) -> List[TemplateDTO]:
-        rows = self.session.execute(db.select(templates.c))
+        rows = self.session.execute(select(templates.c))
 
         return [TemplateDTO(
             row[templates.c.id],

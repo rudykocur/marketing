@@ -1,38 +1,34 @@
 #!/usr/bin/python3
 
+import argparse
 import logging
 
-from injector import Injector
+from injector import Injector, singleton, Binder
 
-from marketing_api.app import app, api
-
-from marketing_api.handlers.contact import ContactsHandler, ContactsDeleteHandler
-from marketing_api.handlers.group import GroupsHandler, GroupsDeleteHandler
-from marketing_api.handlers.template import TemplatesHandler, TemplatesDeleteHandler
-from marketing_api.handlers.mailing import MailingHandler
+from marketing_api.app import createApp
+from marketing_api import startup
+from marketing_api.db.model import Database
 
 logging.basicConfig()
 
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 logging.getLogger().setLevel(logging.INFO)
 
-injector = Injector()
 
+parser = argparse.ArgumentParser(description='Start Marketing backend server')
+parser.add_argument("--dbhost", help="database host to connect", default='db')
+parser.add_argument("--dbport", type=int, help="database port to connect", default=3306)
 
-api.add_resource(ContactsHandler, '/contacts/', resource_class_kwargs={'ctx': injector})
-api.add_resource(ContactsDeleteHandler, '/contacts/delete', resource_class_kwargs={'ctx': injector})
-api.add_resource(GroupsHandler, '/groups/', resource_class_kwargs={'ctx': injector})
-api.add_resource(GroupsDeleteHandler, '/groups/delete', resource_class_kwargs={'ctx': injector})
-api.add_resource(TemplatesHandler, '/templates/', resource_class_kwargs={'ctx': injector})
-api.add_resource(TemplatesDeleteHandler, '/templates/delete', resource_class_kwargs={'ctx': injector})
-
-api.add_resource(MailingHandler, '/mailing/', resource_class_kwargs={'ctx': injector})
-
+args = parser.parse_args()
 
 if __name__ == '__main__':
-    from marketing_api.db import model
-    from marketing_api.app import db
+    app, api, db = createApp(args.dbhost, args.dbport)
 
-    db.create_all()
+    def databaseProvider(binder: Binder):
+        binder.bind(Database, to=db, scope=singleton)
+
+    injector = Injector([databaseProvider])
+
+    startup.setup(injector, api, db)
 
     app.run(debug=True, use_reloader=False, port=5000, host="0.0.0.0")

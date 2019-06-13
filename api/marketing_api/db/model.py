@@ -1,37 +1,42 @@
-from marketing_api.app import db
+from injector import Key
+from sqlalchemy import MetaData, Table, Integer, String, Text, ForeignKey, Column
 
-contacts = db.Table(
-    'contacts', db.metadata,
-    db.Column('id', db.Integer, primary_key=True),
-    db.Column('email', db.String(80,collation='utf8_general_ci')),
-    db.Column('firstName', db.String(80, collation='utf8_general_ci')),
-    db.Column('lastName', db.String(80, collation='utf8_general_ci')),
+Database = Key('Database')  # Marker for pseudo-interface used in injecting database in DataStores
+
+metadata = MetaData()
+
+contacts = Table(
+    'contacts', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('email', String(80,collation='utf8_general_ci')),
+    Column('firstName', String(80, collation='utf8_general_ci')),
+    Column('lastName', String(80, collation='utf8_general_ci')),
 )
 
-groups = db.Table(
-    'groups', db.metadata,
-    db.Column('id', db.Integer, primary_key=True),
-    db.Column('name', db.String(80, collation='utf8_general_ci')),
+groups = Table(
+    'groups', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('name', String(80, collation='utf8_general_ci')),
 )
 
-contact_to_group = db.Table(
-    'contact_to_group', db.metadata,
-    db.Column('contact_id', db.Integer, db.ForeignKey('contacts.id'), primary_key=True),
-    db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True),
+contact_to_group = Table(
+    'contact_to_group', metadata,
+    Column('contact_id', Integer, ForeignKey('contacts.id'), primary_key=True),
+    Column('group_id', Integer, ForeignKey('groups.id'), primary_key=True),
 )
 
-templates = db.Table(
-    'templates', db.metadata,
-    db.Column('id', db.Integer, primary_key=True),
-    db.Column('name', db.String(80, collation='utf8_general_ci')),
-    db.Column('content', db.Text(collation='utf8_general_ci')),
+templates = Table(
+    'templates', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('name', String(80, collation='utf8_general_ci')),
+    Column('content', Text(collation='utf8_general_ci')),
 )
 
-mailing_jobs = db.Table(
-    'mailing_jobs', db.metadata,
-    db.Column('id', db.Integer, primary_key=True),
-    db.Column('template_id', db.Integer, db.ForeignKey('templates.id')),
-    db.Column('group_id', db.Integer, db.ForeignKey('groups.id')),
-    db.Column('total', db.Integer),
-    db.Column('sent', db.Integer),
+mailing_jobs = Table(
+    'mailing_jobs', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('template_id', Integer, ForeignKey('templates.id')),
+    Column('group_id', Integer, ForeignKey('groups.id')),
+    Column('total', Integer),
+    Column('sent', Integer),
 )

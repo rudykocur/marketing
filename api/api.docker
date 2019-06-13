@@ -1,0 +1,21 @@
+FROM alpine:3.7
+
+RUN apk update && apk add bash python3
+
+RUN mkdir -p /app
+
+WORKDIR /app
+COPY requirements.txt /app/requirements.txt
+
+RUN python3 -m pip install -r requirements.txt
+
+COPY . api
+
+WORKDIR /app/api
+
+RUN chmod +x marketing_api/server.py
+
+ENV PYTHONPATH .
+
+ENTRYPOINT [ "python3" ]
+CMD [ "marketing_api/server.py"]

@@ -5,7 +5,10 @@
 
         <v-card>
             <v-card-title>
-                <NewMailingForm :enabled="true" @submit="dispatchNewMailing"></NewMailingForm>
+                <NewMailingForm
+                        ref="form"
+                        :enabled="true"
+                        @submit="dispatchNewMailing"></NewMailingForm>
             </v-card-title>
         </v-card>
 
@@ -13,7 +16,6 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex'
     import NewMailingForm from '../components/NewMailingForm.vue'
     import SelectableTable from '../components/SelectableTable.vue'
 
@@ -23,8 +25,15 @@
             NewMailingForm,
         },
         methods: {
-            dispatchNewMailing(data) {
-                console.log('WILL DISPATCH', data)
+            async dispatchNewMailing(data) {
+
+                try{
+                    await this.$store.dispatch('mailing/dispatch', data);
+                    this.$refs['form'].close();
+                }
+                catch(e) {
+                    this.$refs.form.setError(e.response.data.message);
+                }
             }
         }
     }

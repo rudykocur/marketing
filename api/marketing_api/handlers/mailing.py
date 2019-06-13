@@ -6,7 +6,7 @@ from marketing_api.db.stores import GroupStore, MailingStore, ContactStore, Temp
 from marketing_api import jobs
 
 
-class MailingHandler(Resource):
+class DispatchMailingHandler(Resource):
     def __init__(self, ctx: Injector):
         self.groupsStore = ctx.get(GroupStore)
         self.contactsStore = ctx.get(ContactStore)

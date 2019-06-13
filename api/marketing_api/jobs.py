@@ -1,3 +1,4 @@
+import os
 from logging import getLogger
 from typing import Dict, Optional
 
@@ -23,7 +24,10 @@ class WorkerContext(object):
         self.injector = None
 
     def onInit(self, *a, **kw):
-        app, api, db = createApp('192.168.99.100', 32000)
+        dbHost = os.environ.get('MARKETING_WORKER_DB_HOST', '192.168.99.100')
+        dbPort = int(os.environ.get('MARKETING_WORKER_DB_PORT', 32000))
+
+        app, api, db = createApp(dbHost, dbPort)
 
         def databaseProvider(binder: Binder):
             binder.bind(Database, to=db, scope=singleton)

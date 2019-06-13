@@ -6,6 +6,7 @@ import Contacts from './views/Contacts.vue'
 import Groups from './views/Groups.vue'
 import Mailing from './views/Mailing.vue'
 import Templates from './views/Templates.vue'
+import Login from "./views/Login";
 
 Vue.use(Router);
 
@@ -15,8 +16,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home
+      name: 'login',
+      component: Login
     },
     {
       path: '/server',

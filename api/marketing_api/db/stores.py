@@ -166,3 +166,6 @@ class MailingStore(DataStore):
         ))
 
         return result.inserted_primary_key[0]
+
+    def markPartDone(self, jobId):
+        self.session.execute(mailing_jobs.update().values(sent=mailing_jobs.c.sent + 1).where(mailing_jobs.c.id == jobId))

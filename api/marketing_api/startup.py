@@ -4,6 +4,7 @@ from injector import Injector
 
 from marketing_api.handlers.contact import ContactsHandler, ContactsDeleteHandler
 from marketing_api.handlers.group import GroupsHandler, GroupsDeleteHandler
+from marketing_api.handlers.server import ServerHandler
 from marketing_api.handlers.template import TemplatesHandler, TemplatesDeleteHandler
 from marketing_api.handlers.mailing import DispatchMailingHandler
 
@@ -22,3 +23,5 @@ def setup(injector, api, db):
     api.add_resource(TemplatesDeleteHandler, '/templates/delete', resource_class_kwargs={'ctx': injector})
 
     api.add_resource(DispatchMailingHandler, '/mailing/dispatch', resource_class_kwargs={'ctx': injector})
+
+    api.add_resource(ServerHandler, '/server/', resource_class_kwargs={'ctx': injector})

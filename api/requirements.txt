@@ -4,3 +4,4 @@ flask_sqlalchemy
 flask_cors
 mysql-connector
 injector
+pycryptodome

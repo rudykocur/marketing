@@ -40,3 +40,13 @@ mailing_jobs = Table(
     Column('total', Integer),
     Column('sent', Integer),
 )
+
+servers = Table(
+    'servers', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('address', String(200, collation='utf8_general_ci')),
+    Column('login', String(80, collation='utf8_general_ci')),
+    Column('password', String(200, collation='utf8_general_ci')),
+    Column('from_name', String(80, collation='utf8_general_ci')),
+    Column('from_address', String(80, collation='utf8_general_ci')),
+)

@@ -19,6 +19,10 @@
                                 label="Email server address"></v-text-field>
                         <v-text-field
                                 :disabled="busy"
+                                v-model="formData.login"
+                                label="Login"></v-text-field>
+                        <v-text-field
+                                :disabled="busy"
                                 v-model="formData.password"
                                 label="Password"
                                 type="password"></v-text-field>
@@ -52,6 +56,7 @@
             savedOk: false,
             formData: {
                 address: null,
+                login: null,
                 password: null,
                 fromName: null,
                 fromAddress: null,

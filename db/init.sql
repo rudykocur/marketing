@@ -40,4 +40,15 @@ CREATE TABLE mailing_jobs (
         FOREIGN KEY(group_id) REFERENCES `groups` (id)
 );
 
+CREATE TABLE servers (
+        id INTEGER NOT NULL AUTO_INCREMENT,
+        address VARCHAR(200) COLLATE utf8_general_ci,
+        login VARCHAR(80) COLLATE utf8_general_ci,
+        password VARCHAR(200) COLLATE utf8_general_ci,
+        from_name VARCHAR(80) COLLATE utf8_general_ci,
+        from_address VARCHAR(80) COLLATE utf8_general_ci,
+        PRIMARY KEY (id)
+)
+
+
 COMMIT;

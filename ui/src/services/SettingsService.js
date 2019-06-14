@@ -1,24 +1,19 @@
+import BaseService from "./BaseService";
 
 
-export default class SettingsService {
+export default class SettingsService extends BaseService {
     load() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve({
-                    address: 'https://api.flypsdm.io/public/api/v1',
-                    password: 'teset',
-                    fromName: 'Jan Kowalski',
-                    fromAddress: 'jkowalski@gmail.com',
-                });
-            }, 2000)
-        })
+        return this._get('server/');
     }
 
     save(newSettings) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000)
-        })
+        let data = new FormData();
+        data.set('address', newSettings.address);
+        data.set('login', newSettings.login);
+        data.set('password', newSettings.password);
+        data.set('fromName', newSettings.fromName);
+        data.set('fromAddress', newSettings.fromAddress);
+
+        return this._post('server/', data);
     }
 }

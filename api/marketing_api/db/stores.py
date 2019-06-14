@@ -1,12 +1,13 @@
 from collections import namedtuple
-from typing import List
+from typing import List, Optional
 
 from injector import inject
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import count
+from sqlalchemy.dialects.mysql import insert
 
-from marketing_api.db.model import contacts, groups, contact_to_group, templates, mailing_jobs, Database
+from marketing_api.db.model import contacts, groups, contact_to_group, templates, mailing_jobs, Database, servers
 
 
 class DataStore(object):
@@ -26,6 +27,7 @@ class DataStore(object):
 ContactDTO = namedtuple('ContactDTO', ['id', 'email', 'firstName', 'lastName'])
 GroupDTO = namedtuple('GroupDTO', ['id', 'name', 'contacts'])
 TemplateDTO = namedtuple('TemplateDTO', ['id', 'name', 'content'])
+ServerDTO = namedtuple('ServerDTO', ['address', 'login', 'password', 'fromName', 'fromAddress'])
 
 
 class ContactStore(DataStore):
@@ -169,3 +171,43 @@ class MailingStore(DataStore):
 
     def markPartDone(self, jobId):
         self.session.execute(mailing_jobs.update().values(sent=mailing_jobs.c.sent + 1).where(mailing_jobs.c.id == jobId))
+
+
+class ServerStore(DataStore):
+
+    @inject
+    def __init__(self, db: Database):
+        super().__init__(db)
+
+    def set(self, address, login, password, fromName, fromAddress):
+        stmt = insert(servers).values(
+            id=1,
+            address=address,
+            login=login,
+            password=password,
+            from_name=fromName,
+            from_address=fromAddress,
+        ).on_duplicate_key_update(
+            address=address,
+            login=login,
+            password=password,
+            from_name=fromName,
+            from_address=fromAddress,
+        )
+
+        self.session.execute(stmt)
+
+    def get(self) -> Optional[ServerDTO]:
+        row = self.session.execute(select(servers.c)).fetchone()
+
+        if not row:
+            return None
+
+        return ServerDTO(
+            row[servers.c.address],
+            row[servers.c.login],
+            row[servers.c.password],
+            row[servers.c.from_name],
+            row[servers.c.from_address],
+        )
+

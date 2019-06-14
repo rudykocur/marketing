@@ -15,4 +15,11 @@ export default class TemplatesService extends BaseService {
     loadAll() {
         return this._get('templates/');
     }
+
+    removeById(ids) {
+        let data = new FormData();
+        ids.forEach(id => data.append('templates', id));
+
+        return this._post('templates/delete', data);
+    }
 }

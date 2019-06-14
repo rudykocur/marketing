@@ -23,9 +23,4 @@ export default class BaseService {
         return axios.post(this._path + path, data, config)
             .then(response => response.data);
     }
-
-    _delete(path) {
-        return axios.delete(this._path + path)
-            .then(response => response.data);
-    }
 }

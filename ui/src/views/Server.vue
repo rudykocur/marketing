@@ -9,7 +9,7 @@
 
         <p>Provide setting for email provider</p>
 
-        <v-card>
+        <v-card v-if="$can('view', 'Server')">
             <v-form>
                 <v-container>
                     <v-flex md8>
@@ -43,6 +43,9 @@
                 </v-container>
             </v-form>
         </v-card>
+        <p v-else>
+            No right to view server settings
+        </p>
 
     </v-container>
 </template>

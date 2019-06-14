@@ -46,7 +46,7 @@ export default function createGroupsStore(groupsService) {
                 let idsToRemove = toRemove.map(row => row.id);
 
                 return groupsService.removeById(idsToRemove)
-                    .then(newContacts => {
+                    .then(() => {
                         commit('removeGroupsById', idsToRemove);
                     })
                     .finally(() => commit('setBusy', false));

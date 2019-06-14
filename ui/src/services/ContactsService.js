@@ -17,8 +17,9 @@ export default class ContactsService extends BaseService {
     }
 
     removeById(ids) {
-        return axios.all(ids.map(
-            contactId => this._delete('contacts/'+contactId)
-        ))
+        let data = new FormData();
+        ids.forEach(id => data.append('contacts', id));
+
+        return this._post('contacts/delete', data);
     }
 }

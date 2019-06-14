@@ -18,6 +18,10 @@ export default function createTemplatesStore(templatesService) {
                 state.templates = newTemplates;
             },
 
+            removeTemplatesById(state, toRemoveIds) {
+                state.templates = state.templates.filter(row => toRemoveIds.indexOf(row.id) < 0);
+            },
+
             setBusy(state, isBusy) {
                 state.busy = isBusy;
             }
@@ -51,7 +55,19 @@ export default function createTemplatesStore(templatesService) {
                         return newTemplates;
                     })
                     .finally(() => commit('setBusy', false));
-            }
+            },
+
+            removeTemplates: function({commit}, toRemove) {
+                commit('setBusy', true);
+
+                let idsToRemove = toRemove.map(row => row.id);
+
+                return templatesService.removeById(idsToRemove)
+                    .then(() => {
+                        commit('removeTemplatesById', idsToRemove);
+                    })
+                    .finally(() => commit('setBusy', false));
+            },
         }
     }
 }

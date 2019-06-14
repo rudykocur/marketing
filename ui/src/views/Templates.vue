@@ -90,21 +90,27 @@
         }),
         methods: {
             deleteSelected() {
-                console.log('TODO DELETING TEMPLATES', this.selected);
+                this.$store.dispatch('templates/removeTemplates', this.selected);
             },
             selectionChanged(newSelection) {
                 this.selected = newSelection;
             },
             async addTemplate(data) {
-                console.log('NEW TEMPLATE', data);
-                await this.$store.dispatch('templates/createTemplate', data);
-                this.$refs['form'].close();
+                try{
+                    await this.$store.dispatch('templates/createTemplate', data);
+                    this.$refs['form'].close();
+                }
+                catch(e) {
+                    this.$refs.form.setError('Failed to create new template');
+                }
             },
         },
         computed: Object.assign(
             {
-                canOperateOnSelectedRows() {return this.selected.length > 0 && !this.busy},
-                canAddTemplate() {return !this.busy},
+                canOperateOnSelectedRows() {
+                    return this.$can('manage', 'Templates') && this.selected.length > 0 && !this.busy
+                },
+                canAddTemplate() {return this.$can('manage', 'Templates') && !this.busy},
             },
             mapState({
                 templates: state => state.templates.templates,

@@ -95,14 +95,16 @@
                 this.$store.dispatch('contacts/createContact', data).then(() => {
                     this.$refs['form'].close();
                 }).catch(fail => {
-                    this.$refs['form'].setError(fail);
+                    this.$refs['form'].setError('Failed to create new contact.');
                 })
             },
         },
         computed: Object.assign(
             {
-                canOperateOnSelectedRows() {return this.selected.length > 0 && !this.busy},
-                canAddContact() {return !this.busy},
+                canOperateOnSelectedRows() {
+                    return this.$can('manage', 'Contacts') && this.selected.length > 0 && !this.busy
+                },
+                canAddContact() {return this.$can('manage', 'Contacts') && !this.busy},
             },
             mapState({
                 contacts: state => state.contacts.contacts,

@@ -19,8 +19,9 @@ export default class GroupsService extends BaseService{
     }
 
     removeById(ids) {
-        return axios.all(ids.map(
-            groupId => this._delete('groups/'+groupId)
-        ))
+        let data = new FormData();
+        ids.forEach(id => data.append('groups', id));
+
+        return this._post('groups/delete', data);
     }
 }

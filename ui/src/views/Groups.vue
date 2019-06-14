@@ -86,15 +86,17 @@
                     this.$refs['form'].close();
                 }
                 catch(e) {
-                    this.$refs.form.setError(e.response.data.message);
+                    this.$refs.form.setError('Failed to create new group');
                 }
 
             },
         },
         computed: Object.assign(
             {
-                canOperateOnSelectedRows() {return this.selected.length > 0 && !this.busy},
-                canAddGroup() {return !this.busy},
+                canOperateOnSelectedRows() {
+                    return this.$can('manage', 'Groups') && this.selected.length > 0 && !this.busy
+                },
+                canAddGroup() {return this.$can('manage', 'Groups') && !this.busy},
             },
             mapState({
                 groups: state => state.groups.groups,

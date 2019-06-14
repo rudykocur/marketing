@@ -20,7 +20,19 @@
                                         v-model="formData.name"
                                         :rules="requiredRules"
                                         required></v-text-field>
-
+                                <v-text-field
+                                        label="Subject"
+                                        v-model="formData.subject"
+                                        :rules="requiredRules"
+                                        required></v-text-field>
+                                <v-textarea
+                                        box
+                                        label="Content"
+                                        v-model="formData.content"
+                                        :rules="requiredRules"
+                                        required></v-textarea>
+                                <p>You can use placeholders in content like <code>{contact.firstName}</code>
+                                    and <code>{contact.lastName}</code> for recipient name and last name</p>
 
                             </v-flex>
                         </v-layout>
@@ -59,6 +71,7 @@
             valid: true,
             formData: {
                 name: 'New template name',
+                subject: 'Mail subject',
                 content: 'Lorem ipsum',
             },
             requiredRules: [

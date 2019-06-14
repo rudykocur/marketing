@@ -29,6 +29,7 @@ templates = Table(
     'templates', metadata,
     Column('id', Integer, primary_key=True),
     Column('name', String(80, collation='utf8_general_ci')),
+    Column('subject', String(200, collation='utf8_general_ci')),
     Column('content', Text(collation='utf8_general_ci')),
 )
 

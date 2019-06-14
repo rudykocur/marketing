@@ -22,13 +22,14 @@ class TemplatesHandler(Resource):
         return result
 
     def post(self):
-        template = self.store.create(request.form['name'], request.form['content'])
+        template = self.store.create(request.form['name'], request.form['subject'], request.form['content'])
 
         self.store.commit()
 
         return {
             'id': template.id,
             'name': template.name,
+            'subject': template.subject,
             'content': template.content,
         }
 

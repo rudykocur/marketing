@@ -18,7 +18,7 @@ class MailSender(object):
     def __init__(self, encrypter: Encrypter):
         self.encrypter = encrypter
 
-    def send(self, server: ServerDTO, contact: ContactDTO, body: str):
+    def send(self, server: ServerDTO, contact: ContactDTO, subject: str, body: str):
         respone = requests.post(
             server.address,
             auth=HTTPBasicAuth(
@@ -34,7 +34,7 @@ class MailSender(object):
                     "name": "{} {}".format(contact.firstName, contact.lastName),
                     "email": contact.email,
                 },
-                "subject": "Test email subject",
+                "subject": subject,
                 "text": body,
                 "headers": {}
             })

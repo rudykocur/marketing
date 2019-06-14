@@ -31,7 +31,7 @@ class DispatchMailingHandler(Resource):
         self.mailingStore.commit()
 
         for contact in contacts:
-            jobs.sendMail.delay(jobId, server, contact, template.content)
+            jobs.sendMail.delay(jobId, server, contact, template)
 
         return {
             'jobId': jobId,

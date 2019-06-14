@@ -17,6 +17,7 @@ CREATE TABLE `groups` (
 CREATE TABLE templates (
         id INTEGER NOT NULL AUTO_INCREMENT,
         name VARCHAR(80) COLLATE utf8_general_ci,
+        subject VARCHAR(200) COLLATE utf8_general_ci,
         content TEXT COLLATE utf8_general_ci,
         PRIMARY KEY (id)
 );

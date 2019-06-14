@@ -22,7 +22,13 @@
                                         required></v-text-field>
                             </v-flex>
                             <v-flex md8 text-xs-right>
-                                <v-btn color="info" @click="onLogin">Login</v-btn>
+                                <v-progress-circular
+                                        v-if="busy"
+                                        indeterminate></v-progress-circular>
+                                <v-btn
+                                        color="info"
+                                        :disabled="busy"
+                                        @click="onLogin">Login</v-btn>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -34,6 +40,7 @@
 <script>
 
     import defineRightsFor from '../rights';
+    import {mapState} from "vuex";
 
     export default {
         data: () => ({
@@ -47,10 +54,17 @@
                 v => !!v || 'Required'
             ],
         }),
+        computed: Object.assign(
+            {},
+            mapState({
+                busy: state => state.session.busy,
+            })
+        ),
         methods: {
-            onLogin() {
-                this.$ability.update(defineRightsFor({role: 'admin'}).rules);
-                this.$router.push('contacts')
+            async onLogin() {
+                let session = await this.$store.dispatch('session/login', this.formData);
+
+                this.$ability.update(defineRightsFor(session).rules);
             }
         }
     }

@@ -32,6 +32,7 @@
                     :items="templates" @selection-changed="selectionChanged">
                 <template v-slot:row="{row}">
                     <td>{{ row.item.name }}</td>
+                    <td>{{ row.item.subject }}</td>
                     <td @click.stop="row.expanded = !row.expanded" class="clickable">
                         <v-icon v-if="!row.expanded">keyboard_arrow_down</v-icon>
                         <v-icon v-if="row.expanded">keyboard_arrow_up</v-icon>
@@ -81,6 +82,7 @@
             search: '',
             headers: [
                 {text: 'Name', value: 'name'},
+                {text: 'Subject', value: 'subject'},
                 {text: '', value: '', sortable: false},
 
             ],

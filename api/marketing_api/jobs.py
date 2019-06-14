@@ -8,7 +8,7 @@ from injector import Binder, singleton, Injector, inject
 
 from marketing_api.app import createApp
 from marketing_api.db.model import Database
-from marketing_api.db.stores import MailingStore, ContactDTO, ServerDTO
+from marketing_api.db.stores import MailingStore, ContactDTO, ServerDTO, TemplateDTO
 from marketing_api.sender import MailSender
 from marketing_api.template_renderer import TemplateRenderer
 
@@ -58,21 +58,21 @@ signals.worker_init.connect(workerCtx.onInit)
 
 
 @queue.task(bind=True, typing=False, default_retry_delay=10)
-def sendMail(self: Task, jobId: int, serverData: tuple, contactData: tuple, template: str, ctx: WorkerContext) -> None:
+def sendMail(self: Task, jobId: int, serverData: tuple, contactData: tuple, templateData: tuple, ctx: WorkerContext) -> None:
     """
     Thin wrapper for executing task implementation with proper dependency injection.
 
     If there would be more tasks, then this could be turned in kind of factory wrapping every task the same way.
     """
     try:
-        ctx.injector.get(MailSenderTask).execute(jobId, serverData, contactData, template)
+        ctx.injector.get(MailSenderTask).execute(jobId, serverData, contactData, templateData)
         ctx.db.session.commit()
     except Exception as exc:
         ctx.db.session.rollback()
 
         # because we inject custom keyword args, we must reset them while retrying
         raise self.retry(
-            args=(jobId, serverData, contactData, template),
+            args=(jobId, serverData, contactData, templateData),
             kwargs={},
             exc=exc
         )
@@ -85,13 +85,14 @@ class MailSenderTask(object):
         self.renderer = renderer
         self.sender = sender
 
-    def execute(self, jobId: int, serverData: tuple, contactData: tuple, template: str):
+    def execute(self, jobId: int, serverData: tuple, contactData: tuple, templateData: tuple):
 
         contact = ContactDTO(*contactData)
         server = ServerDTO(*serverData)
+        template = TemplateDTO(*templateData)
 
-        rendered = self.renderer.render(template, contact=contact)
+        rendered = self.renderer.render(template.content, contact=contact)
 
-        self.sender.send(server, contact, rendered)
+        self.sender.send(server, contact, template.subject, rendered)
 
         self.store.markPartDone(jobId)

@@ -26,7 +26,7 @@ class DataStore(object):
 
 ContactDTO = namedtuple('ContactDTO', ['id', 'email', 'firstName', 'lastName'])
 GroupDTO = namedtuple('GroupDTO', ['id', 'name', 'contacts'])
-TemplateDTO = namedtuple('TemplateDTO', ['id', 'name', 'content'])
+TemplateDTO = namedtuple('TemplateDTO', ['id', 'name', 'subject', 'content'])
 ServerDTO = namedtuple('ServerDTO', ['address', 'login', 'password', 'fromName', 'fromAddress'])
 
 
@@ -130,10 +130,10 @@ class GroupStore(DataStore):
 
 
 class TemplateStore(DataStore):
-    def create(self, name: str, content: str) -> TemplateDTO:
-        result = self.session.execute(templates.insert().values(name=name, content=content))
+    def create(self, name: str, subject: str, content: str) -> TemplateDTO:
+        result = self.session.execute(templates.insert().values(name=name, subject=subject, content=content))
 
-        return TemplateDTO(result.inserted_primary_key[0], name, content)
+        return TemplateDTO(result.inserted_primary_key[0], name, subject, content)
 
     def get(self, templateId: int) -> TemplateDTO:
         query = select(templates.c, whereclause=templates.c.id == templateId)
@@ -142,6 +142,7 @@ class TemplateStore(DataStore):
         return TemplateDTO(
             row[templates.c.id],
             row[templates.c.name],
+            row[templates.c.subject],
             row[templates.c.content],
         )
 
@@ -151,6 +152,7 @@ class TemplateStore(DataStore):
         return [TemplateDTO(
             row[templates.c.id],
             row[templates.c.name],
+            row[templates.c.subject],
             row[templates.c.content],
         ) for row in rows]
 

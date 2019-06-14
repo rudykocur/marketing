@@ -9,13 +9,14 @@ import ContactsService from './services/ContactsService'
 import GroupsService from './services/GroupsService'
 import TemplatesService from './services/TemplatesService'
 import MailingService from "./services/MailingService";
+import SessionService from "./services/SessionService";
 
 import defineRightsFor from './rights';
 
 Vue.config.productionTip = false;
 
 let store = createStore(new SettingsService(), new ContactsService(), new GroupsService(), new TemplatesService(),
-    new MailingService());
+    new MailingService(), new SessionService());
 
 Vue.use(abilitiesPlugin, defineRightsFor({}));
 

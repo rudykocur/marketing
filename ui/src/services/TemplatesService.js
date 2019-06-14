@@ -3,9 +3,10 @@ import BaseService from './BaseService';
 
 export default class TemplatesService extends BaseService {
 
-    create(name, content) {
+    create(name, subject, content) {
         let data = new FormData();
         data.set('name', name);
+        data.set('subject', subject);
         data.set('content', content);
 
         return this._post('templates/', data);

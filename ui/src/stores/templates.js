@@ -27,7 +27,7 @@ export default function createTemplatesStore(templatesService) {
             createTemplate({commit}, data) {
                 commit('setBusy', true);
 
-                return templatesService.create(data.name, data.content)
+                return templatesService.create(data.name, data.subject, data.content)
                     .then(newTemplate => {
                         commit('addTemplate', newTemplate);
 

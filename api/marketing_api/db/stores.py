@@ -69,6 +69,24 @@ class ContactStore(DataStore):
     def delete(self, contactIds: List[int]):
         self.session.execute(contacts.delete().where(contacts.c.id.in_(contactIds)))
 
+    def deleteGroups(self, contactsIds: List[int]):
+        self.session.execute(contact_to_group.delete().where(contact_to_group.c.contact_id.in_(contactsIds)))
+
+    def addGroups(self, contactsIds: List[int], groupsIds: List[int]):
+        values = []
+
+        for contactId in contactsIds:
+            for groupId in groupsIds:
+                values.append({
+                    'contact_id': contactId,
+                    'group_id': groupId
+                })
+
+        if len(values) == 0:
+            return
+
+        self.session.execute(contact_to_group.insert().values(values))
+
 
 class GroupStore(DataStore):
     def create(self, name: str, contacts: List[int]) -> GroupDTO:
@@ -94,7 +112,7 @@ class GroupStore(DataStore):
                 ],
                 whereclause=groups.c.id == groupId
             )
-            .select_from(groups.join(contact_to_group))
+            .select_from(groups.outerjoin(contact_to_group))
             .group_by(groups.c.id)
         )
 
@@ -115,7 +133,7 @@ class GroupStore(DataStore):
                     count(contact_to_group.c.contact_id).label('contacts')
                 ]
             )
-            .select_from(groups.join(contact_to_group))
+            .select_from(groups.outerjoin(contact_to_group))
             .group_by(groups.c.id)
         )
 

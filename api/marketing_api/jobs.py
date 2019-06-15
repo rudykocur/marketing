@@ -14,7 +14,7 @@ from marketing_api.template_renderer import TemplateRenderer
 
 _logger = getLogger(__name__)
 
-queue = Celery('marketing_app.jobs', backend='redis://192.168.99.100/1', broker='redis://192.168.99.100')
+queue = Celery('marketing_app.jobs', backend='redis://redis/1', broker='redis://redis')
 
 
 class WorkerContext(object):
@@ -30,7 +30,7 @@ class WorkerContext(object):
 
         Connect to database, create DI Container.
         """
-        dbHost = os.environ.get('MARKETING_WORKER_DB_HOST', '192.168.99.100')
+        dbHost = os.environ.get('MARKETING_WORKER_DB_HOST', 'db')
         dbPort = int(os.environ.get('MARKETING_WORKER_DB_PORT', 32000))
 
         app, api, db = createApp(dbHost, dbPort)

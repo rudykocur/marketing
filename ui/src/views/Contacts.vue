@@ -37,19 +37,18 @@
                 </template>
 
                 <template v-slot:actions>
-                    <v-btn
-                               @click=""
-                               :disabled="!canOperateOnSelectedRows">
-                            <v-icon>group_add</v-icon>
-                            Add to group
-                        </v-btn>
+                    <AddContactsToGroups
+                            ref="addGroupsForm"
+                            :loading="busy"
+                            :enabled="canOperateOnSelectedRows"
+                            @submit="addToGroups"></AddContactsToGroups>
 
-                        <v-btn class="deleteButton"
-                               @click="deleteSelected"
-                               :disabled="!canOperateOnSelectedRows">
-                            <v-icon>delete</v-icon>
-                            Delete
-                        </v-btn>
+                    <v-btn class="deleteButton"
+                           @click="deleteSelected"
+                           :disabled="!canOperateOnSelectedRows">
+                        <v-icon>delete</v-icon>
+                        Delete
+                    </v-btn>
                 </template>
             </SelectableTable>
 
@@ -67,12 +66,14 @@
 <script>
     import { mapState } from 'vuex'
     import NewContactForm from '../components/NewContactForm.vue'
+    import AddContactsToGroups from '../components/AddContactsToGroups.vue'
     import SelectableTable from '../components/SelectableTable.vue'
 
     export default {
         components: {
             NewContactForm,
             SelectableTable,
+            AddContactsToGroups,
         },
         data: () => ({
             search: '',
@@ -98,6 +99,19 @@
                     this.$refs['form'].setError('Failed to create new contact.');
                 })
             },
+            async addToGroups(data) {
+                try{
+                    await this.$store.dispatch('contacts/addToGroups', {
+                        contacts: this.selected,
+                        groups: data.groups,
+                    });
+                    await this.$store.dispatch('groups/loadGroups', true);
+                    this.$refs['addGroupsForm'].close();
+                }
+                catch(e) {
+                    this.$refs['addGroupsForm'].setError('Failed to add groups to contacts.');
+                }
+            }
         },
         computed: Object.assign(
             {
@@ -112,7 +126,8 @@
             })),
 
         mounted() {
-            this.$store.dispatch('contacts/loadContacts')
+            this.$store.dispatch('contacts/loadContacts');
+            this.$store.dispatch('groups/loadGroups');
         }
     }
 </script>

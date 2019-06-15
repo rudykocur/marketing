@@ -41,6 +41,21 @@ class ContactsHandler(SecuredResource):
         }
 
 
+class ContactGroupsHandler(SecuredResource):
+    def __init__(self, ctx: Injector):
+        self.store = ctx.get(ContactStore)
+
+    @require('manage', 'Contacts')
+    def post(self):
+        contacts = list(map(int, request.form.getlist('contacts')))
+        groups = list(map(int, request.form.getlist('groups')))
+
+        self.store.deleteGroups(contacts)
+        self.store.addGroups(contacts, groups)
+
+        self.store.commit()
+
+
 class ContactsDeleteHandler(SecuredResource):
 
     def __init__(self, ctx: Injector):

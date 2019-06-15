@@ -38,6 +38,16 @@ export default function createContactsStore(contactsService) {
                     .finally(() => commit('setBusy', false));
             },
 
+            addToGroups: function({commit}, data) {
+                commit('setBusy', true);
+
+                return contactsService.addToGroups(
+                    data.contacts.map(row => row.id),
+                    data.groups,
+                )
+                    .finally(() => commit('setBusy', false));
+            },
+
             removeContacts: function({commit}, toRemove) {
                 commit('setBusy', true);
 

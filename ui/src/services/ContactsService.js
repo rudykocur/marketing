@@ -16,6 +16,15 @@ export default class ContactsService extends BaseService {
         return this._get('contacts/');
     }
 
+    addToGroups(contactsIds, groupsIds) {
+
+        let data = new FormData();
+        contactsIds.forEach(id => data.append('contacts', id));
+        groupsIds.forEach(id => data.append('groups', id));
+
+        return this._post('contacts/groups', data);
+    }
+
     removeById(ids) {
         let data = new FormData();
         ids.forEach(id => data.append('contacts', id));

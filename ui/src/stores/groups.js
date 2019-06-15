@@ -52,9 +52,9 @@ export default function createGroupsStore(groupsService) {
                     .finally(() => commit('setBusy', false));
             },
 
-            loadGroups({commit, state}) {
+            loadGroups({commit, state}, refresh) {
 
-                if(state.groups.length > 0) {
+                if(!refresh && state.groups.length > 0) {
                     return Promise.resolve(state.groups);
                 }
 

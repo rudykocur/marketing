@@ -1,0 +1,30 @@
+version: '3'
+services:
+  api:
+    build:
+      context: api
+      dockerfile: api.docker
+    ports:
+      - "5000:5000"
+  worker:
+    build:
+      context: api
+      dockerfile: worker.docker
+  ui:
+    build:
+      context: ui
+      dockerfile: ui.docker
+    ports:
+      - "8080:8080"
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  db:
+    image: mysql:5.7
+    ports:
+      - "32000:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/:ro

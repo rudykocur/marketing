@@ -6,6 +6,28 @@ from marketing_api.db.stores import GroupStore, MailingStore, ContactStore, Temp
 from marketing_api.resource import SecuredResource, require
 
 
+class MailingJobsHandler(SecuredResource):
+    def __init__(self, ctx: Injector):
+        self.mailingStore = ctx.get(MailingStore)
+
+    @require('view', 'Mailing')
+    def get(self):
+        result = []
+
+        for job in self.mailingStore.getAll():
+            result.append({
+                'id': job.id,
+                'templateId': job.templateId,
+                'templateName': job.templateName,
+                'groupId': job.groupId,
+                'groupName': job.groupName,
+                'sent': job.sent,
+                'total': job.total,
+            })
+
+        return result
+
+
 class DispatchMailingHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.groupsStore = ctx.get(GroupStore)
@@ -14,13 +36,7 @@ class DispatchMailingHandler(SecuredResource):
         self.templatesStore = ctx.get(TemplateStore)
         self.serverStore = ctx.get(ServerStore)
 
-    @require('view', 'Mailing')
-    def get(self):
-        result = []
-
-        return result
-
-    @require('manage', 'Groups')
+    @require('manage', 'Mailing')
     def post(self):
         template = self.templatesStore.get(int(request.form['templateId']))
         group = self.groupsStore.get(int(request.form['groupId']))

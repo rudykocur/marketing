@@ -38,8 +38,8 @@ class ServerHandler(SecuredResource):
             request.form['address'],
             request.form['login'],
             self.encrypter.encrypt(request.form['password']),
-            request.form['fromAddress'],
             request.form['fromName'],
+            request.form['fromAddress'],
         )
 
         self.store.commit()

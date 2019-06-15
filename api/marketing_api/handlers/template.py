@@ -9,7 +9,7 @@ class TemplatesHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.store = ctx.get(TemplateStore)
 
-    @require('view', 'Groups')
+    @require('view', 'Templates')
     def get(self):
         result = []
 
@@ -22,7 +22,7 @@ class TemplatesHandler(SecuredResource):
 
         return result
 
-    @require('manage', 'Mailing')
+    @require('manage', 'Templates')
     def post(self):
         template = self.store.create(request.form['name'], request.form['subject'], request.form['content'])
 
@@ -41,7 +41,7 @@ class TemplatesDeleteHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.store = ctx.get(TemplateStore)
 
-    @require('manage', 'Groups')
+    @require('manage', 'Templates')
     def post(self):
         templates = request.form.getlist('templates')
 

@@ -14,11 +14,28 @@ export default function createMailingStore(mailingService) {
                 state.jobs.push(newJob);
             },
 
+            setJobs(state, newJobs) {
+                state.jobs = newJobs;
+            },
+
             setBusy(state, isBusy) {
                 state.busy = isBusy;
             }
         },
         actions: {
+            loadJobs({commit, state}) {
+
+                commit('setBusy', true);
+
+                return mailingService.loadAll()
+                    .then(newJobs => {
+                        commit('setJobs', newJobs);
+
+                        return newJobs;
+                    })
+                    .finally(() => commit('setBusy', false));
+            },
+
             dispatch({commit}, data) {
                 commit('setBusy', true);
 

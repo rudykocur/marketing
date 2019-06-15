@@ -6,6 +6,10 @@ export default class MailingService extends BaseService{
         super();
     }
 
+    loadAll() {
+        return this._get('mailing/');
+    }
+
     dispatch(groupId, templateId) {
         let data = new FormData();
         data.set('groupId', groupId);

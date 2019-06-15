@@ -1,10 +1,12 @@
 import axios from 'axios';
 var qs = require('qs');
 
+axios.defaults.withCredentials = true;
+
 export default class BaseService {
     constructor() {
-        this._path = (window.location.hostname === 'localhost' ?
-            'http://localhost:5000/' :
+        this._path = (window.location.hostname === '192.168.56.1' ?
+            'http://192.168.56.1:5000/' :
             window.location.origin + '/api/');
     }
 

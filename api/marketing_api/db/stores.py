@@ -27,6 +27,8 @@ class DataStore(object):
 ContactDTO = namedtuple('ContactDTO', ['id', 'email', 'firstName', 'lastName'])
 GroupDTO = namedtuple('GroupDTO', ['id', 'name', 'contacts'])
 TemplateDTO = namedtuple('TemplateDTO', ['id', 'name', 'subject', 'content'])
+MailingJobDTO = namedtuple('MailingJobDTO', ['id', 'templateId', 'templateName', 'groupId', 'groupName',
+                                             'total', 'sent'])
 ServerDTO = namedtuple('ServerDTO', ['address', 'login', 'password', 'fromName', 'fromAddress'])
 
 
@@ -161,6 +163,33 @@ class TemplateStore(DataStore):
 
 
 class MailingStore(DataStore):
+    def getAll(self) -> List[MailingJobDTO]:
+        query = (
+            select(
+                columns=[
+                    mailing_jobs.c.id,
+                    mailing_jobs.c.template_id,
+                    mailing_jobs.c.group_id,
+                    mailing_jobs.c.total,
+                    mailing_jobs.c.sent,
+                    groups.c.name.label('group_name'),
+                    templates.c.name.label('template_name'),
+                ]
+            ).select_from(mailing_jobs.join(groups).join(templates))
+        )
+
+        rows = self.session.execute(query)
+
+        return [MailingJobDTO(
+            row[mailing_jobs.c.id],
+            row[mailing_jobs.c.template_id],
+            row['template_name'],
+            row[mailing_jobs.c.group_id],
+            row['group_name'],
+            row[mailing_jobs.c.total],
+            row[mailing_jobs.c.sent],
+        ) for row in rows]
+
     def createJob(self, templateId: int, groupId: int, total: int) -> int:
         result = self.session.execute(mailing_jobs.insert().values(
             template_id=templateId,

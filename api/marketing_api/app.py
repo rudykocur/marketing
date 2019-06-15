@@ -18,6 +18,6 @@ def createApp(dbHost: str, dbPort: int):
 
     db = SQLAlchemy(app)
     api = Api(app)
-    cors = CORS(app)
+    cors = CORS(app, supports_credentials=True)
 
     return app, api, db

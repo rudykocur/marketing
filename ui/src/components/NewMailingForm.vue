@@ -66,7 +66,7 @@
             valid: true,
             formData: {
                 template: 1,
-                group: 2,
+                group: 1,
             },
             requiredRules: [
                 v => !!v || 'Required'

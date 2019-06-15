@@ -1,3 +1,5 @@
+import datetime
+
 from flask import request
 from injector import Injector
 
@@ -23,6 +25,7 @@ class MailingJobsHandler(SecuredResource):
                 'groupName': job.groupName,
                 'sent': job.sent,
                 'total': job.total,
+                'created': job.created and job.created.strftime('%Y-%m-%d %H:%M:%S'),
             })
 
         return result
@@ -52,5 +55,12 @@ class DispatchMailingHandler(SecuredResource):
             jobs.sendMail.delay(jobId, server, contact, template)
 
         return {
-            'jobId': jobId,
+            'id': jobId,
+            'templateId': template.id,
+            'templateName': template.name,
+            'groupId': group.id,
+            'groupName': group.name,
+            'sent': 0,
+            'total': len(contacts),
+            'created': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         }

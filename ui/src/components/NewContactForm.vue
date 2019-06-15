@@ -69,9 +69,9 @@
             error: null,
             valid: true,
             formData: {
-                email: 'janek@op.pl',
-                firstName: 'Janek',
-                lastName: 'Kowalski',
+                email: '',
+                firstName: '',
+                lastName: '',
             },
             requiredRules: [
                 v => !!v || 'Required'

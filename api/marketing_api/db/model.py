@@ -1,5 +1,5 @@
 from injector import Key
-from sqlalchemy import MetaData, Table, Integer, String, Text, ForeignKey, Column
+from sqlalchemy import MetaData, Table, Integer, String, Text, ForeignKey, Column, DateTime
 
 Database = Key('Database')  # Marker for pseudo-interface used in injecting database in DataStores
 
@@ -40,6 +40,7 @@ mailing_jobs = Table(
     Column('group_id', Integer, ForeignKey('groups.id', ondelete='RESTRICT')),
     Column('total', Integer),
     Column('sent', Integer),
+    Column('created', DateTime),
 )
 
 servers = Table(

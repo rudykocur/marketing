@@ -70,9 +70,9 @@
             error: null,
             valid: true,
             formData: {
-                name: 'New template name',
-                subject: 'Mail subject',
-                content: 'Lorem ipsum',
+                name: '',
+                subject: '',
+                content: '',
             },
             requiredRules: [
                 v => !!v || 'Required'

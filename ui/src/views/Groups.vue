@@ -7,6 +7,7 @@
             <v-card-title>
 
                 <NewGroupForm
+                        v-if="$can('manage', 'Groups')"
                         ref="form"
                         :loading="busy"
                         :enabled="canAddGroup"
@@ -38,6 +39,7 @@
 
                 <template v-slot:actions>
                     <v-btn class="deleteButton"
+                           v-if="$can('manage', 'Groups')"
                            @click="deleteSelected"
                            :disabled="!canOperateOnSelectedRows">
                         <v-icon>delete</v-icon>
@@ -94,9 +96,9 @@
         computed: Object.assign(
             {
                 canOperateOnSelectedRows() {
-                    return this.$can('manage', 'Groups') && this.selected.length > 0 && !this.busy
+                    return this.selected.length > 0 && !this.busy
                 },
-                canAddGroup() {return this.$can('manage', 'Groups') && !this.busy},
+                canAddGroup() {return !this.busy},
             },
             mapState({
                 groups: state => state.groups.groups,

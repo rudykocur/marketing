@@ -66,7 +66,7 @@
             error: null,
             valid: true,
             formData: {
-                name: 'Gruba grupa',
+                name: '',
                 members: [],
             },
             requiredRules: [

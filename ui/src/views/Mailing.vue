@@ -10,16 +10,28 @@
                         ref="form"
                         :enabled="true"
                         @submit="dispatchNewMailing"></NewMailingForm>
+
+                <v-spacer></v-spacer>
+
+                <v-text-field
+                        v-model="search"
+                        append-icon="search"
+                        label="Search"
+                        single-line
+                        hide-details
+                ></v-text-field>
             </v-card-title>
 
             <v-data-table
                     :headers="headers"
+                    :search="search"
                     :items="items">
                 <template v-slot:items="row">
                     <td>{{ row.item.templateName }}</td>
                     <td>{{ row.item.groupName }}</td>
                     <td>{{ row.item.total }}</td>
                     <td>{{ row.item.sent }}</td>
+                    <td>{{ row.item.created }}</td>
                 </template>
             </v-data-table>
         </v-card>
@@ -44,6 +56,7 @@
                 {text: 'Group name', value: 'groupName'},
                 {text: 'To sent', value: 'total'},
                 {text: 'Sent mails', value: 'sent'},
+                {text: 'Created', value: 'created'},
             ],
             selected: [],
             intervalId: null,

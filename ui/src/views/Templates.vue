@@ -7,6 +7,7 @@
             <v-card-title>
 
                 <NewTemplateForm
+                        v-if="$can('manage', 'Templates')"
                         ref="form"
                         :loading="busy"
                         :enabled="canAddTemplate"
@@ -41,6 +42,7 @@
 
                 <template v-slot:actions>
                     <v-btn class="deleteButton"
+                           v-if="$can('manage', 'Templates')"
                            @click="deleteSelected"
                            :disabled="!canOperateOnSelectedRows">
                         <v-icon>delete</v-icon>
@@ -108,9 +110,9 @@
         computed: Object.assign(
             {
                 canOperateOnSelectedRows() {
-                    return this.$can('manage', 'Templates') && this.selected.length > 0 && !this.busy
+                    return this.selected.length > 0 && !this.busy
                 },
-                canAddTemplate() {return this.$can('manage', 'Templates') && !this.busy},
+                canAddTemplate() {return !this.busy},
             },
             mapState({
                 templates: state => state.templates.templates,

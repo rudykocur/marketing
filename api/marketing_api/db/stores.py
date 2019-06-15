@@ -1,3 +1,4 @@
+import datetime
 from collections import namedtuple
 from typing import List, Optional
 
@@ -28,7 +29,7 @@ ContactDTO = namedtuple('ContactDTO', ['id', 'email', 'firstName', 'lastName'])
 GroupDTO = namedtuple('GroupDTO', ['id', 'name', 'contacts'])
 TemplateDTO = namedtuple('TemplateDTO', ['id', 'name', 'subject', 'content'])
 MailingJobDTO = namedtuple('MailingJobDTO', ['id', 'templateId', 'templateName', 'groupId', 'groupName',
-                                             'total', 'sent'])
+                                             'total', 'sent', 'created'])
 ServerDTO = namedtuple('ServerDTO', ['address', 'login', 'password', 'fromName', 'fromAddress'])
 
 
@@ -190,6 +191,7 @@ class MailingStore(DataStore):
                     mailing_jobs.c.group_id,
                     mailing_jobs.c.total,
                     mailing_jobs.c.sent,
+                    mailing_jobs.c.created,
                     groups.c.name.label('group_name'),
                     templates.c.name.label('template_name'),
                 ]
@@ -206,6 +208,7 @@ class MailingStore(DataStore):
             row['group_name'],
             row[mailing_jobs.c.total],
             row[mailing_jobs.c.sent],
+            row[mailing_jobs.c.created],
         ) for row in rows]
 
     def createJob(self, templateId: int, groupId: int, total: int) -> int:
@@ -213,7 +216,8 @@ class MailingStore(DataStore):
             template_id=templateId,
             group_id=groupId,
             total=total,
-            sent=0
+            sent=0,
+            created=datetime.datetime.now()
         ))
 
         return result.inserted_primary_key[0]

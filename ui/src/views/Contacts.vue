@@ -7,6 +7,7 @@
             <v-card-title>
 
                 <NewContactForm
+                        v-if="$can('manage', 'Contacts')"
                         ref="form"
                         :loading="busy"
                         :enabled="canAddContact"
@@ -38,12 +39,14 @@
 
                 <template v-slot:actions>
                     <AddContactsToGroups
+                            v-if="$can('manage', 'Contacts')"
                             ref="addGroupsForm"
                             :loading="busy"
                             :enabled="canOperateOnSelectedRows"
                             @submit="addToGroups"></AddContactsToGroups>
 
                     <v-btn class="deleteButton"
+                           v-if="$can('manage', 'Contacts')"
                            @click="deleteSelected"
                            :disabled="!canOperateOnSelectedRows">
                         <v-icon>delete</v-icon>
@@ -116,9 +119,9 @@
         computed: Object.assign(
             {
                 canOperateOnSelectedRows() {
-                    return this.$can('manage', 'Contacts') && this.selected.length > 0 && !this.busy
+                    return this.selected.length > 0 && !this.busy
                 },
-                canAddContact() {return this.$can('manage', 'Contacts') && !this.busy},
+                canAddContact() {return !this.busy},
             },
             mapState({
                 contacts: state => state.contacts.contacts,

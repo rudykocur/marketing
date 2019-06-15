@@ -1,12 +1,12 @@
 from flask import request
-from flask_restful import Resource
 from injector import Injector
 
-from marketing_api.db.stores import GroupStore, MailingStore, ContactStore, TemplateStore, ServerStore
 from marketing_api import jobs
+from marketing_api.db.stores import GroupStore, MailingStore, ContactStore, TemplateStore, ServerStore
+from marketing_api.resource import SecuredResource, require
 
 
-class DispatchMailingHandler(Resource):
+class DispatchMailingHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.groupsStore = ctx.get(GroupStore)
         self.contactsStore = ctx.get(ContactStore)
@@ -14,11 +14,13 @@ class DispatchMailingHandler(Resource):
         self.templatesStore = ctx.get(TemplateStore)
         self.serverStore = ctx.get(ServerStore)
 
+    @require('view', 'Mailing')
     def get(self):
         result = []
 
         return result
 
+    @require('manage', 'Groups')
     def post(self):
         template = self.templatesStore.get(int(request.form['templateId']))
         group = self.groupsStore.get(int(request.form['groupId']))

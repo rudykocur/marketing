@@ -21,8 +21,8 @@ groups = Table(
 
 contact_to_group = Table(
     'contact_to_group', metadata,
-    Column('contact_id', Integer, ForeignKey('contacts.id'), primary_key=True),
-    Column('group_id', Integer, ForeignKey('groups.id'), primary_key=True),
+    Column('contact_id', Integer, ForeignKey('contacts.id', ondelete='CASCADE'), primary_key=True),
+    Column('group_id', Integer, ForeignKey('groups.id', ondelete='CASCADE'), primary_key=True),
 )
 
 templates = Table(
@@ -36,8 +36,8 @@ templates = Table(
 mailing_jobs = Table(
     'mailing_jobs', metadata,
     Column('id', Integer, primary_key=True),
-    Column('template_id', Integer, ForeignKey('templates.id')),
-    Column('group_id', Integer, ForeignKey('groups.id')),
+    Column('template_id', Integer, ForeignKey('templates.id', ondelete='RESTRICT')),
+    Column('group_id', Integer, ForeignKey('groups.id', ondelete='RESTRICT')),
     Column('total', Integer),
     Column('sent', Integer),
 )

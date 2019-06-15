@@ -1,19 +1,19 @@
 from logging import getLogger
 
 from flask import request
-from flask_restful import Resource
 from injector import Injector
 
 from marketing_api.db.stores import ContactStore
-
+from marketing_api.resource import SecuredResource, require
 
 _logger = getLogger(__name__)
 
 
-class ContactsHandler(Resource):
+class ContactsHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.store = ctx.get(ContactStore)
 
+    @require('view', 'Contacts')
     def get(self):
         result = []
 
@@ -27,6 +27,7 @@ class ContactsHandler(Resource):
 
         return result
 
+    @require('manage', 'Contacts')
     def post(self):
         contact = self.store.create(request.form['email'], request.form['firstName'], request.form['lastName'])
 
@@ -40,11 +41,12 @@ class ContactsHandler(Resource):
         }
 
 
-class ContactsDeleteHandler(Resource):
+class ContactsDeleteHandler(SecuredResource):
 
     def __init__(self, ctx: Injector):
         self.store = ctx.get(ContactStore)
 
+    @require('manage', 'Contacts')
     def post(self):
         contacts = request.form.getlist('contacts')
 

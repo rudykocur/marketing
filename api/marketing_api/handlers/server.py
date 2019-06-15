@@ -1,16 +1,17 @@
 from flask import request
-from flask_restful import Resource
 from injector import Injector
 
 from marketing_api.db.stores import ServerStore
 from marketing_api.encrypter import Encrypter
+from marketing_api.resource import require, SecuredResource
 
 
-class ServerHandler(Resource):
+class ServerHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.store = ctx.get(ServerStore)
         self.encrypter = ctx.get(Encrypter)
 
+    @require('view', 'Server')
     def get(self):
         server = self.store.get()
 
@@ -31,6 +32,7 @@ class ServerHandler(Resource):
             'fromName': server.fromName,
         }
 
+    @require('manage', 'Server')
     def post(self):
         self.store.set(
             request.form['address'],

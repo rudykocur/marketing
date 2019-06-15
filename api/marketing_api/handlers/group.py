@@ -1,14 +1,15 @@
 from flask import request
-from flask_restful import Resource
 from injector import Injector
 
 from marketing_api.db.stores import GroupStore
+from marketing_api.resource import SecuredResource, require
 
 
-class GroupsHandler(Resource):
+class GroupsHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.store = ctx.get(GroupStore)
 
+    @require('view', 'Groups')
     def get(self):
         result = []
 
@@ -22,6 +23,7 @@ class GroupsHandler(Resource):
 
         return result
 
+    @require('manage', 'Groups')
     def post(self):
         group = self.store.create(
             request.form['name'],
@@ -37,11 +39,12 @@ class GroupsHandler(Resource):
         }
 
 
-class GroupsDeleteHandler(Resource):
+class GroupsDeleteHandler(SecuredResource):
 
     def __init__(self, ctx: Injector):
         self.store = ctx.get(GroupStore)
 
+    @require('manage', 'Groups')
     def post(self):
         groups = request.form.getlist('groups')
 

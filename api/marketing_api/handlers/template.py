@@ -1,14 +1,15 @@
 from flask import request
-from flask_restful import Resource
 from injector import Injector
 
 from marketing_api.db.stores import TemplateStore
+from marketing_api.resource import SecuredResource, require
 
 
-class TemplatesHandler(Resource):
+class TemplatesHandler(SecuredResource):
     def __init__(self, ctx: Injector):
         self.store = ctx.get(TemplateStore)
 
+    @require('view', 'Groups')
     def get(self):
         result = []
 
@@ -21,6 +22,7 @@ class TemplatesHandler(Resource):
 
         return result
 
+    @require('manage', 'Mailing')
     def post(self):
         template = self.store.create(request.form['name'], request.form['subject'], request.form['content'])
 
@@ -34,11 +36,12 @@ class TemplatesHandler(Resource):
         }
 
 
-class TemplatesDeleteHandler(Resource):
+class TemplatesDeleteHandler(SecuredResource):
 
     def __init__(self, ctx: Injector):
         self.store = ctx.get(TemplateStore)
 
+    @require('manage', 'Groups')
     def post(self):
         templates = request.form.getlist('templates')
 

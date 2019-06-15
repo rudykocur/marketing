@@ -1,5 +1,7 @@
 create database marketing;
 
+use marketing;
+
 CREATE TABLE contacts (
         id INTEGER NOT NULL AUTO_INCREMENT,
         email VARCHAR(80) COLLATE utf8_general_ci,
@@ -22,12 +24,22 @@ CREATE TABLE templates (
         PRIMARY KEY (id)
 );
 
+CREATE TABLE servers (
+        id INTEGER NOT NULL AUTO_INCREMENT,
+        address VARCHAR(200) COLLATE utf8_general_ci,
+        login VARCHAR(80) COLLATE utf8_general_ci,
+        password VARCHAR(200) COLLATE utf8_general_ci,
+        from_name VARCHAR(80) COLLATE utf8_general_ci,
+        from_address VARCHAR(80) COLLATE utf8_general_ci,
+        PRIMARY KEY (id)
+);
+
 CREATE TABLE contact_to_group (
         contact_id INTEGER NOT NULL,
         group_id INTEGER NOT NULL,
         PRIMARY KEY (contact_id, group_id),
-        FOREIGN KEY(contact_id) REFERENCES contacts (id),
-        FOREIGN KEY(group_id) REFERENCES `groups` (id)
+        FOREIGN KEY(contact_id) REFERENCES contacts (id) ON DELETE CASCADE,
+        FOREIGN KEY(group_id) REFERENCES `groups` (id) ON DELETE CASCADE
 );
 
 CREATE TABLE mailing_jobs (
@@ -37,19 +49,9 @@ CREATE TABLE mailing_jobs (
         total INTEGER,
         sent INTEGER,
         PRIMARY KEY (id),
-        FOREIGN KEY(template_id) REFERENCES templates (id),
-        FOREIGN KEY(group_id) REFERENCES `groups` (id)
+        FOREIGN KEY(template_id) REFERENCES templates (id) ON DELETE RESTRICT,
+        FOREIGN KEY(group_id) REFERENCES `groups` (id) ON DELETE RESTRICT
 );
-
-CREATE TABLE servers (
-        id INTEGER NOT NULL AUTO_INCREMENT,
-        address VARCHAR(200) COLLATE utf8_general_ci,
-        login VARCHAR(80) COLLATE utf8_general_ci,
-        password VARCHAR(200) COLLATE utf8_general_ci,
-        from_name VARCHAR(80) COLLATE utf8_general_ci,
-        from_address VARCHAR(80) COLLATE utf8_general_ci,
-        PRIMARY KEY (id)
-)
 
 
 COMMIT;

@@ -21,6 +21,11 @@
                                         type="password"
                                         required></v-text-field>
                             </v-flex>
+                            <v-flex md8>
+                                <v-alert type="error" :value="error">
+                                    {{ error }}
+                                </v-alert>
+                            </v-flex>
                             <v-flex md8 text-xs-right>
                                 <v-progress-circular
                                         v-if="busy"
@@ -62,7 +67,15 @@
         ),
         methods: {
             async onLogin() {
+                this.error = '';
+
                 let session = await this.$store.dispatch('session/login', this.formData);
+
+                if(!session.role) {
+                    this.error = 'Invalid login/password';
+                    this.formData.login = '';
+                    this.formData.password = '';
+                }
 
                 this.$ability.update(defineRightsFor(session).rules);
             }

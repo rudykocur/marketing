@@ -25,7 +25,9 @@ export default function createSessionStore(sessionService) {
                 return sessionService.login(data.login, data.password)
                     .then(session => {
 
-                        commit('setLoggedIn', true);
+                        if(session.role) {
+                            commit('setLoggedIn', true);
+                        }
 
                         return session;
                     })
